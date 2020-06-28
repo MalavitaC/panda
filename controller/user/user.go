@@ -7,3 +7,7 @@ func Query(c *gin.Context) {
 		"message": "pong",
 	})
 }
+
+func Create() {
+
+}
