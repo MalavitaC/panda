@@ -8,7 +8,7 @@ import (
 )
 
 func Register(r *gin.Engine) {
-	api := r.Group("/api")
+	api := r.Group("/puzzle/api")
 	{
 		api.GET("/users", user.Query)
 		api.POST("/users", user.Create)
