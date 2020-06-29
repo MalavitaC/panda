@@ -9,5 +9,5 @@ import (
 func main() {
 	app := gin.Default()
 	router.Register(app)
-	app.Run()
+	app.Run("0.0.0.0:9000")
 }
