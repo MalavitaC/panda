@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	_ "panda/router"
-	"time"
+	"reflect"
 
 	_ "github.com/gin-gonic/gin"
 )
@@ -31,28 +31,34 @@ func readchan(numchan chan int, reschan chan int, exitchan chan bool) {
 	exitchan <- true
 }
 
+type Cal struct {
+	Num1 int
+	Num2 int
+}
+
+func (cal Cal) GetSub(name string) {
+	fmt.Printf("%v完成了减法运算 %v-%v=%v", name, cal.Num1, cal.Num2, cal.Num1-cal.Num2)
+}
+
 func main() {
 	// app := gin.Default()
 	// router.Register(app)
 	// app.Run("0.0.0.0:9000")
 	// fmt.Println("端口:", 9000)
 
-	numchan := make(chan int, 800000)
-	reschan := make(chan int, 800000)
-	exitchan := make(chan bool, 8)
+	cal := Cal{}
 
-	go writechan(numchan)
-
-	start := time.Now()
-	for i := 0; i < 8; i++ {
-		go readchan(numchan, reschan, exitchan)
+	ct := reflect.TypeOf(cal)
+	cv := reflect.ValueOf(&cal)
+	for i := 0; i < cv.Elem().NumField(); i++ {
+		fmt.Printf("结构体的字段%v: %v\n", i, ct.Field(i).Name)
 	}
+	cv.Elem().Field(0).SetInt(8)
+	cv.Elem().Field(1).SetInt(3)
 
-	for i := 0; i < 8; i++ {
-		<-exitchan
-	}
-	cost := time.Since(start)
-	fmt.Printf("耗时[%v]", cost)
+	var nameSilce []reflect.Value
+	nameSilce = append(nameSilce, reflect.ValueOf("tom"))
+	cv.MethodByName("GetSub").Call(nameSilce)
 
 	// close(reschan)
 
