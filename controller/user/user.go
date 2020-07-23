@@ -13,6 +13,7 @@ func Query(c *gin.Context) {
 }
 
 func Create(c *gin.Context) {
+
 	c.JSON(200, gin.H{
 		"message": "用户已创建",
 	})
