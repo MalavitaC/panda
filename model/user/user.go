@@ -1,10 +1,11 @@
-package User
+package user
 
 import "time"
 
 type User struct {
 	ID        uint                   `gorm:"cloumn:id;primary_key"`
 	OpenID    string                 `gorm:"cloumn:openID;size:28;NOT NULL"`
+	Name      string                 `gorm:"cloumn:namea;size:100;NOT NULL"`
 	NickNamea string                 `gorm:"cloumn:nickNamea;size:100;NOT NULL"`
 	Vatarurl  string                 `gorm:"cloumn:vatarurl;size:100;NOT NULL"`
 	Country   string                 `gorm:"cloumn:country;size:100;NOT NULL"`

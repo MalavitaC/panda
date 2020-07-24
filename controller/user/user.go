@@ -1,6 +1,7 @@
 package user
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,9 +13,19 @@ func Query(c *gin.Context) {
 	})
 }
 
-func Create(c *gin.Context) {
+type login struct {
+	Code string `json:"code"`
+}
 
-	c.JSON(200, gin.H{
-		"message": "用户已创建",
+func Login(c *gin.Context) {
+
+	var login login
+
+	c.BindJSON(&login)
+
+	log.Println(login.Code)
+	c.JSON(http.StatusOK, gin.H{
+		"status": "SUCCESS",
+		"name":   "蔡文心",
 	})
 }
