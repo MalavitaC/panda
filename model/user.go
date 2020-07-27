@@ -1,10 +1,11 @@
-package user
+package model
 
 import "time"
 
 type User struct {
 	ID        uint                   `gorm:"cloumn:id;primary_key"`
 	OpenID    string                 `gorm:"cloumn:openID;size:28;NOT NULL"`
+	UnionID   string                 `gorm:"cloumn:unionID;size:256;NOT NULL"`
 	Name      string                 `gorm:"cloumn:namea;size:100;NOT NULL"`
 	NickNamea string                 `gorm:"cloumn:nickNamea;size:100;NOT NULL"`
 	Vatarurl  string                 `gorm:"cloumn:vatarurl;size:100;NOT NULL"`
@@ -16,7 +17,7 @@ type User struct {
 	Telnum    string                 `gorm:"cloumn:telnum;size:13;NOT NULL"`
 	Exif      map[string]interface{} `gorm:"cloumn:exif;type:json;DEFAULT:null"`
 	Status    uint                   `gorm:"cloumn:status;NOT NULL"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	CreatedAt *time.Time
+	UpdatedAt *time.Time
 	DeletedAt *time.Time
 }

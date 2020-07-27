@@ -3,6 +3,7 @@ package user
 import (
 	"log"
 	"net/http"
+	"panda/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,17 +14,25 @@ func Query(c *gin.Context) {
 	})
 }
 
-type login struct {
+type LoginParams struct {
 	Code string `json:"code"`
 }
 
 func Login(c *gin.Context) {
 
-	var login login
+	var body LoginParams
+	c.BindJSON(&body)
 
-	c.BindJSON(&login)
+	user, err := service.GetOpenID(body.Code)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+	}
+	log.Println(user)
 
-	log.Println(login.Code)
+	service.QueryUserByOpenID(user.Openid)
+
 	c.JSON(http.StatusOK, gin.H{
 		"status": "SUCCESS",
 		"name":   "蔡文心",
