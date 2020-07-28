@@ -23,15 +23,16 @@ func Login(c *gin.Context) {
 	var body LoginParams
 	c.BindJSON(&body)
 
-	user, err := service.GetOpenID(body.Code)
+	wxUser, err := service.GetOpenID(body.Code)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err,
 		})
 	}
-	log.Println(user)
+	log.Printf("%+v\n", wxUser)
 
-	service.QueryUserByOpenID(user.Openid)
+	user := model.findOrCreateUserByOpenID(wxUser)
+	// log.Println(user)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status": "SUCCESS",
