@@ -3,6 +3,7 @@ package user
 import (
 	"log"
 	"net/http"
+	"panda/model"
 	"panda/service"
 
 	"github.com/gin-gonic/gin"
@@ -31,7 +32,13 @@ func Login(c *gin.Context) {
 	}
 	log.Printf("%+v\n", wxUser)
 
-	user := model.findOrCreateUserByOpenID(wxUser)
+	user := model.FindOrCreateUserByOpenID(wxUser)
+	if user == nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"status":  "FAIL",
+			"message": "user not exist",
+		})
+	}
 	// log.Println(user)
 
 	c.JSON(http.StatusOK, gin.H{

@@ -28,12 +28,12 @@ type User struct {
 	DeletedAt  *time.Time
 }
 
-func findOrCreateUserByOpenID(wxUser service.BodyStruct) *gorm.DB | nil {
+func FindOrCreateUserByOpenID(wxUser service.BodyStruct) *User {
 	var user User
 
-	result := DB.Where(User{OpenID: wxUser.Openid}).Attrs(User{SessionKey: wxUser.Session_key}).FirstOrCreate(&user)
-	if gorm.IsRecordNotFoundError(result.Error) {
+	err := DB.Where(User{OpenID: wxUser.Openid}).Attrs(User{SessionKey: wxUser.Session_key}).FirstOrCreate(&user).Error
+	if gorm.IsRecordNotFoundError(err) {
 		return nil
 	}
-	return result
+	return &user
 }
