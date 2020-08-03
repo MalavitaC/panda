@@ -11,6 +11,7 @@ func Register(r *gin.Engine) {
 	api := r.Group("/puzzle/api")
 	{
 		api.GET("/users", user.Query)
+		api.POST("/users/sync", user.SyncUserInfo)
 		api.POST("/users/login", user.Login)
 		api.GET("/integrals", integral.Query)
 	}

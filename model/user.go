@@ -3,8 +3,6 @@ package model
 import (
 	"panda/service"
 	"time"
-
-	"github.com/jinzhu/gorm"
 )
 
 type User struct {
@@ -13,7 +11,7 @@ type User struct {
 	UnionID    string                 `gorm:"cloumn:unionID;size:256;NOT NULL;DEFAULT:\"\""`
 	SessionKey string                 `gorm:"cloumn:sessionKey;size:256;NOT NULL"`
 	Name       string                 `gorm:"cloumn:namea;size:100;NOT NULL;DEFAULT:\"\""`
-	NickNamea  string                 `gorm:"cloumn:nickNamea;size:100;NOT NULL;DEFAULT:\"\""`
+	NickName   string                 `gorm:"cloumn:nickName;size:100;NOT NULL;DEFAULT:\"\""`
 	Vatarurl   string                 `gorm:"cloumn:vatarurl;size:100;NOT NULL;DEFAULT:\"\""`
 	Country    string                 `gorm:"cloumn:country;size:100;NOT NULL;DEFAULT:\"\""`
 	Province   string                 `gorm:"cloumn:province;size:100;NOT NULL;DEFAULT:\"\""`
@@ -28,12 +26,21 @@ type User struct {
 	DeletedAt  *time.Time
 }
 
-func findOrCreateUserByOpenID(wxUser service.BodyStruct) *gorm.DB | nil {
+func FindOrCreateUserByOpenID(wxUser service.BodyStruct) User {
 	var user User
+	DB.Where(User{OpenID: wxUser.Openid}).Attrs(User{SessionKey: wxUser.Session_key}).FirstOrCreate(&user)
+	return user
+}
 
-	result := DB.Where(User{OpenID: wxUser.Openid}).Attrs(User{SessionKey: wxUser.Session_key}).FirstOrCreate(&user)
-	if gorm.IsRecordNotFoundError(result.Error) {
+func QueryUserByOpenID(openID string) *User {
+	var user User
+	if DB.Where(User{OpenID: openID}).First(&user).RecordNotFound() {
 		return nil
 	}
-	return result
+	return &user
+}
+
+func UpdateByOpenID(params interface{}, openID string) {
+	var user User
+	DB.Model(&user).Where("openID = ?", openID).Updates(params)
 }
