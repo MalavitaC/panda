@@ -27,16 +27,16 @@ func Login(c *gin.Context) {
 	wxUser, err := service.GetOpenID(body.Code)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err,
+			"message": err.Error(),
 		})
+		return
 	}
-	log.Printf("%+v\n", wxUser)
 
 	user := model.FindOrCreateUserByOpenID(wxUser)
 	log.Println(user)
-	needSync := true
+	needSync := false
 	if user.NickName == "" {
-		needSync = false
+		needSync = true
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -49,7 +49,7 @@ func Login(c *gin.Context) {
 type SyncUserInfoParams struct {
 	OpenID    string `json:"openID"`
 	NickName  string `json:"nickName"`
-	Gender    int32  `json:"gender"`
+	Gender    int8   `json:"gender"`
 	Language  string `json:"language"`
 	City      string `json:"city"`
 	Province  string `json:"province"`
@@ -63,7 +63,6 @@ func SyncUserInfo(c *gin.Context) {
 	c.BindJSON(&body)
 
 	user := model.QueryUserByOpenID(body.OpenID)
-	log.Printf("%+v\n", user)
 	if user == nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": "openID is not found ",
@@ -71,7 +70,15 @@ func SyncUserInfo(c *gin.Context) {
 		return
 	}
 
-	model.UpdateByOpenID(body, body.OpenID)
+	model.UpdateByOpenID(model.User{
+		NickName:  body.NickName,
+		Gender:    body.Gender,
+		Language:  body.Language,
+		City:      body.City,
+		Province:  body.Province,
+		Country:   body.Country,
+		AvatarUrl: body.AvatarUrl,
+	}, body.OpenID)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status": "SUCCESS",

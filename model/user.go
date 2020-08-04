@@ -6,21 +6,22 @@ import (
 )
 
 type User struct {
-	ID         uint                   `gorm:"cloumn:id;primary_key"`
-	OpenID     string                 `gorm:"cloumn:openID;size:256;NOT NULL"`
-	UnionID    string                 `gorm:"cloumn:unionID;size:256;NOT NULL;DEFAULT:\"\""`
-	SessionKey string                 `gorm:"cloumn:sessionKey;size:256;NOT NULL"`
-	Name       string                 `gorm:"cloumn:namea;size:100;NOT NULL;DEFAULT:\"\""`
-	NickName   string                 `gorm:"cloumn:nickName;size:100;NOT NULL;DEFAULT:\"\""`
-	Vatarurl   string                 `gorm:"cloumn:vatarurl;size:100;NOT NULL;DEFAULT:\"\""`
-	Country    string                 `gorm:"cloumn:country;size:100;NOT NULL;DEFAULT:\"\""`
-	Province   string                 `gorm:"cloumn:province;size:100;NOT NULL;DEFAULT:\"\""`
-	City       string                 `gorm:"cloumn:city;size:100;NOT NULL;DEFAULT:\"\""`
-	Language   string                 `gorm:"cloumn:language;size:100;NOT NULL;DEFAULT:\"\""`
-	Mobile     string                 `gorm:"cloumn:mobile;size:50;NOT NULL;DEFAULT:\"\""`
-	Telnum     string                 `gorm:"cloumn:telnum;size:13;NOT NULL;DEFAULT:\"\""`
-	Exif       map[string]interface{} `gorm:"cloumn:exif;type:json;DEFAULT:null"`
-	Status     uint                   `gorm:"cloumn:status;NOT NULL;DEFAULT:1"`
+	ID         uint                   `gorm:"Column:id;primary_key"`
+	OpenID     string                 `gorm:"Column:openID;size:256;NOT NULL"`
+	UnionID    string                 `gorm:"Column:unionID;size:256;NOT NULL;DEFAULT:\"\""`
+	SessionKey string                 `gorm:"Column:sessionKey;size:256;NOT NULL"`
+	Name       string                 `gorm:"Column:namea;size:100;NOT NULL;DEFAULT:\"\""`
+	NickName   string                 `gorm:"Column:nickName;size:100;NOT NULL;DEFAULT:\"\""`
+	Gender     int8                   `gorm:"Column:gender;NOT NULL;"`
+	AvatarUrl  string                 `gorm:"Column:avatarurl;size:256;NOT NULL;DEFAULT:\"\""`
+	Country    string                 `gorm:"Column:country;size:100;NOT NULL;DEFAULT:\"\""`
+	Province   string                 `gorm:"Column:province;size:100;NOT NULL;DEFAULT:\"\""`
+	City       string                 `gorm:"Column:city;size:100;NOT NULL;DEFAULT:\"\""`
+	Language   string                 `gorm:"Column:language;size:100;NOT NULL;DEFAULT:\"\""`
+	Mobile     string                 `gorm:"Column:mobile;size:50;NOT NULL;DEFAULT:\"\""`
+	Telnum     string                 `gorm:"Column:telnum;size:13;NOT NULL;DEFAULT:\"\""`
+	Exif       map[string]interface{} `gorm:"Column:exif;type:json;DEFAULT:null"`
+	Status     uint                   `gorm:"Column:status;NOT NULL;DEFAULT:1"`
 	CreatedAt  *time.Time
 	UpdatedAt  *time.Time
 	DeletedAt  *time.Time
@@ -40,7 +41,7 @@ func QueryUserByOpenID(openID string) *User {
 	return &user
 }
 
-func UpdateByOpenID(params interface{}, openID string) {
+func UpdateByOpenID(params User, openID string) {
 	var user User
 	DB.Model(&user).Where("openID = ?", openID).Updates(params)
 }

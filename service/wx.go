@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -14,7 +15,7 @@ type BodyStruct struct {
 	Openid      string
 	Session_key string
 	Unionid     string
-	Errcode     string
+	Errcode     int
 	Errmsg      string
 }
 
@@ -27,13 +28,20 @@ func GetOpenID(code string) (BodyStruct, error) {
 	params.Set("js_code", code)
 	params.Set("grant_type", "authorization_code")
 	Url.RawQuery = params.Encode()
-	res, err := http.Get(Url.String())
-	if err != nil {
-		return bodyStruct, err
+	res, httpErr := http.Get(Url.String())
+	if httpErr != nil {
+		return bodyStruct, httpErr
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, ioutilErr := ioutil.ReadAll(res.Body)
+	if ioutilErr != nil {
+		return bodyStruct, ioutilErr
+	}
 
 	json.Unmarshal(body, &bodyStruct)
+
+	if bodyStruct.Errcode != 0 {
+		return bodyStruct, errors.New(bodyStruct.Errmsg)
+	}
 	return bodyStruct, nil
 }

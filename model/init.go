@@ -19,7 +19,7 @@ func InitDB() {
 	// defer db.Close()
 
 	// Migrate the schema
-	db.AutoMigrate()
+	db.AutoMigrate(&User{})
 
 	DB = db
 }
