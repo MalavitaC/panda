@@ -13,6 +13,8 @@ func Register(r *gin.Engine) {
 		api.GET("/users", user.Query)
 		api.POST("/users/sync", user.SyncUserInfo)
 		api.POST("/users/login", user.Login)
+		api.PUT("/users/:id", user.Update)
+		api.DELETE("/users", user.Delete)
 		api.GET("/integrals", integral.Query)
 	}
 }

@@ -5,13 +5,37 @@ import (
 	"net/http"
 	"panda/model"
 	"panda/service"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
+type QueryParams struct {
+	Id     uint64 `json:"id"`
+	OpenID string `json: "openID"`
+}
+
 func Query(c *gin.Context) {
+	var body QueryParams
+	var result *model.User
+	c.BindQuery(&body)
+
+	if body.Id == 0 && body.OpenID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "参数错误",
+		})
+		return
+	}
+
+	if body.Id > 0 {
+		result = model.QueryUserById(body.Id)
+	} else {
+		result = model.QueryUserByOpenID(body.OpenID)
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"message": "无",
+		"status": "SUCCESS",
+		"data":   result,
 	})
 }
 
@@ -82,5 +106,70 @@ func SyncUserInfo(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"status": "SUCCESS",
+	})
+}
+
+type DeleteParams struct {
+	Id     uint64 `json:"id"`
+	OpenID string `json: "openID"`
+}
+
+func Delete(c *gin.Context) {
+	var body DeleteParams
+	c.BindJSON(&body)
+
+	if body.Id == 0 && body.OpenID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "参数错误",
+		})
+		return
+	}
+
+	if body.Id > 0 {
+		model.DeleteUserById(body.Id)
+	} else {
+		model.DeleteUserByOpenID(body.OpenID)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": "SUCCESS",
+		"data":   body,
+	})
+}
+
+type UpdateParams struct {
+	NickName  string `json:"nickName"`
+	Gender    int8   `json:"gender"`
+	Language  string `json:"language"`
+	City      string `json:"city"`
+	Province  string `json:"province"`
+	Country   string `json:"country"`
+	AvatarUrl string `json:"avatarUrl"`
+}
+
+func Update(c *gin.Context) {
+	var body UpdateParams
+	c.BindJSON(&body)
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 0)
+
+	if user := model.QueryUserById(id); user == nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "用户不存在",
+		})
+		return
+	}
+	model.UpdateById(model.User{
+		NickName:  body.NickName,
+		Gender:    body.Gender,
+		Language:  body.Language,
+		City:      body.City,
+		Province:  body.Province,
+		Country:   body.Country,
+		AvatarUrl: body.AvatarUrl,
+	}, id)
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": "SUCCESS",
+		"data":   body,
 	})
 }

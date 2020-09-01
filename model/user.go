@@ -6,7 +6,7 @@ import (
 )
 
 type User struct {
-	ID         uint                   `gorm:"Column:id;primary_key"`
+	ID         uint64                 `gorm:"Column:id;primary_key"`
 	OpenID     string                 `gorm:"Column:openID;size:256;NOT NULL"`
 	UnionID    string                 `gorm:"Column:unionID;size:256;NOT NULL;DEFAULT:\"\""`
 	SessionKey string                 `gorm:"Column:sessionKey;size:256;NOT NULL"`
@@ -33,6 +33,14 @@ func FindOrCreateUserByOpenID(wxUser service.BodyStruct) User {
 	return user
 }
 
+func QueryUserById(Id uint64) *User {
+	var user User
+	if DB.Where(User{ID: Id}).First(&user).RecordNotFound() {
+		return nil
+	}
+	return &user
+}
+
 func QueryUserByOpenID(openID string) *User {
 	var user User
 	if DB.Where(User{OpenID: openID}).First(&user).RecordNotFound() {
@@ -44,4 +52,17 @@ func QueryUserByOpenID(openID string) *User {
 func UpdateByOpenID(params User, openID string) {
 	var user User
 	DB.Model(&user).Where("openID = ?", openID).Updates(params)
+}
+
+func DeleteUserById(Id uint64) {
+	DB.Where(User{ID: Id}).Delete(&User{})
+}
+
+func DeleteUserByOpenID(openID string) {
+	DB.Where(User{OpenID: openID}).Delete(&User{})
+}
+
+func UpdateById(params User, Id uint64) {
+	var user User
+	DB.Model(&user).Where("id = ?", Id).Updates(params)
 }
