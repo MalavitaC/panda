@@ -8,8 +8,8 @@ import (
 	"net/url"
 )
 
-const APPID = "wx3a8da23d5c4ae903"
-const APPSECRET = "315cee879d47dc24204f17cf80003364"
+const APPID = "***"
+const APPSECRET = "***"
 
 type BodyStruct struct {
 	Openid      string
